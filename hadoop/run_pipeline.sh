@@ -10,7 +10,7 @@ mapred streaming \
   -input /diabetes_project/input/diabetes_binary_health_indicators_BRFSS2015.csv \
   -output /diabetes_project/output \
   -mapper "python3 mapper.py" \
-  -reducer "python3 reducer.py" \
+  -reducer "python3 reducer.py"
 
 echo "Job Finished"
 
@@ -22,6 +22,8 @@ mkdir -p data
 # it here before appending the MapReduce output.
 echo "Diabetes_binary,HighBP,HighChol,CholCheck,BMI,Smoker,Stroke,HeartDiseaseorAttack,PhysActivity,Fruits,Veggies,HvyAlcoholConsump,AnyHealthcare,NoDocbcCost,GenHlth,MentHlth,PhysHlth,DiffWalk,Sex,Age,Education,Income" > data/clean_dataset.csv
 
-hdfs dfs -getmerge /diabetes_project/output data/clean_dataset.csv
+hdfs dfs -getmerge /diabetes_project/output data/tmp_dataset.csv
+cat data/tmp_dataset.csv >> data/clean_dataset.csv
+rm data/tmp_dataset.csv
 
 echo "The clean dataset is saved locally as data/clean_dataset.csv"
