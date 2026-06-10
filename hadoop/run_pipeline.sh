@@ -10,12 +10,18 @@ mapred streaming \
   -output /diabetes_project/output \
   -mapper "python3 mapper.py" \
   -reducer "python3 reducer.py" \
-  -file hadoop/mapper.py \
-  -file hadoop/reducer.py
+  -files hadoop/mapper.py,hadoop/reducer.py
 
 echo "Job Finished"
 
 mkdir -p data
+
+# Hadoop's shuffle/sort phase pushes header rows to the bottom of the output
+# because numbers (0, 1) sort before uppercase letters (D). 
+# To fix this, our mapper skips the header entirely, and we manually write 
+# it here before appending the MapReduce output.
+echo "Diabetes_binary,HighBP,HighChol,CholCheck,BMI,Smoker,Stroke,HeartDiseaseorAttack,PhysActivity,Fruits,Veggies,HvyAlcoholConsump,AnyHealthcare,NoDocbcCost,GenHlth,MentHlth,PhysHlth,DiffWalk,Sex,Age,Education,Income" > data/clean_dataset.csv
+
 hdfs dfs -getmerge /diabetes_project/output data/clean_dataset.csv
 
 echo "The clean dataset is saved locally as data/clean_dataset.csv"

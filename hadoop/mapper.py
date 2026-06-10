@@ -8,9 +8,11 @@ def main():
             continue
             
         if line.startswith("Diabetes_012") or line.startswith("Diabetes_binary"):
-            columns = line.split(",")
-            columns[0] = "Diabetes_binary"
-            print(",".join(columns))
+            # Skip the header so we don't output it to Hadoop.
+            # If we let Hadoop process the header, its alphanumeric sort 
+            # will push the header row to the bottom of the dataset 
+            # (since numbers 0 and 1 sort before the letter 'D').
+            # We'll manually inject the header in the shell script instead.
             continue
             
         columns = line.split(",")
